@@ -45,11 +45,7 @@ int main(int argc, char **argv) {
   strm.zfree = Z_NULL;
   strm.opaque = Z_NULL;
   if (deflateInit(&strm, Z_DEFAULT_COMPRESSION) != Z_OK) {
-    free(out_buf);
-    free(in_buf);
-    fclose(out);
-    fclose(in);
-    return -1;
+    goto finish;
   }
 
   strm.avail_in = 0;
@@ -73,11 +69,7 @@ int main(int argc, char **argv) {
       }
       break;
     } else if (status != Z_OK) {
-      free(out_buf);
-      free(in_buf);
-      fclose(out);
-      fclose(in);
-      return -1;
+      goto finish;
     }
     if (strm.avail_out == 0) {
       fwrite(out_buf, sizeof(char), BUF_SIZE, out);
@@ -95,6 +87,7 @@ int main(int argc, char **argv) {
 
   deflateEnd(&strm);
 
+ finish:
   free(out_buf);
   free(in_buf);
   fclose(out);
